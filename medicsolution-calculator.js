@@ -151,6 +151,16 @@ const defaultEconomics = {
 
 const AUTH_STORAGE_KEY = "medicsolution-calculator-unlocked";
 const AUTH_HASH = "18ce790d527c9299c254275cf3cc83f02e072fef5c7bb5e42c1fa90fac569acf";
+const moneyInputIds = new Set([
+  "monthly-subscription",
+  "unit-cost",
+  "deployment-fee",
+  "rental-rate",
+  "unit-day-cost",
+  "storage-insurance",
+  "hub-cost",
+  "shortfall-penalty"
+]);
 
 const tourSteps = [
   {
@@ -289,26 +299,32 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function parseNumber(value) {
+  const cleaned = String(value ?? "").replace(/[^0-9.-]/g, "");
+  return Number(cleaned || 0);
+}
+
 function readNumber(id) {
   const node = document.getElementById(id);
-  return Number(node?.value || 0);
+  return parseNumber(node?.value);
 }
 
 function writeValue(id, value) {
   const node = document.getElementById(id);
-  if (node) node.value = String(value);
+  if (!node) return;
+  node.value = moneyInputIds.has(id) ? formatMoneyInput(value) : String(value);
 }
 
-function formatMoney(value, compact = true) {
-  const abs = Math.abs(value);
-  const options = compact && abs >= 1000000
-    ? { notation: "compact", maximumFractionDigits: 1 }
-    : { maximumFractionDigits: 0 };
+function formatMoney(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    ...options
+    maximumFractionDigits: 0
   }).format(value);
+}
+
+function formatMoneyInput(value) {
+  return formatMoney(parseNumber(value));
 }
 
 function formatNumber(value, digits = 0) {
@@ -428,6 +444,22 @@ function initPageTabs() {
       const nextTab = tabs[nextIndex];
       activatePage(nextTab.dataset.pageTab, true);
       nextTab.focus();
+    });
+  });
+}
+
+function initMoneyInputs() {
+  moneyInputIds.forEach((id) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    input.addEventListener("focus", () => {
+      input.value = String(parseNumber(input.value) || "");
+      input.select();
+    });
+
+    input.addEventListener("blur", () => {
+      input.value = formatMoneyInput(input.value);
     });
   });
 }
@@ -901,7 +933,7 @@ function renderDecision(results) {
   } else if (results.fulfillmentProbability >= target) {
     band.classList.add("warning");
     title = "Capacity clears, pricing does not";
-    copy = `The fleet clears the ${formatPercent(target)} service target, but annual economics are short by ${formatMoney(Math.abs(results.margin))}. Breakeven subscription pricing is ${formatMoney(results.breakevenMonthly, false)} per month per 10 units.`;
+    copy = `The fleet clears the ${formatPercent(target)} service target, but annual economics are short by ${formatMoney(Math.abs(results.margin))}. Breakeven subscription pricing is ${formatMoney(results.breakevenMonthly)} per month per 10 units.`;
   } else if (results.margin >= 0) {
     band.classList.add("warning");
     title = "Profitable but under-reserved";
@@ -995,7 +1027,7 @@ function renderEconomicsChart(results) {
     `;
   }).join("");
 
-  $("#breakeven-caption").textContent = `${formatMoney(results.breakevenMonthly, false)} monthly breakeven per 10 units`;
+  $("#breakeven-caption").textContent = `${formatMoney(results.breakevenMonthly)} monthly breakeven per 10 units`;
 }
 
 function renderScenarioOutputs(results) {
@@ -1016,7 +1048,7 @@ function renderFinancialGrid(results) {
     ["Annualized fleet capital", formatMoney(results.fleetCapitalCost)],
     ["Opex and logistics", formatMoney(opex)],
     ["Shortfall risk reserve", formatMoney(results.shortfallRiskCost)],
-    ["Breakeven monthly per 10", formatMoney(results.breakevenMonthly, false)],
+    ["Breakeven monthly per 10", formatMoney(results.breakevenMonthly)],
     ["Risk-adjusted margin", formatMoney(results.margin), marginClass],
     ["Margin on revenue", formatPercent(results.margin / Math.max(1, results.totalRevenue), 1), marginClass],
     ["Expected shortfall unit-days", formatNumber(results.expectedShortfallUnitDays, 1)],
@@ -1058,7 +1090,7 @@ function modelSummary(results) {
     `Subscription ARR: ${formatMoney(results.subscriptionArr)}`,
     `Total annual revenue: ${formatMoney(results.totalRevenue)}`,
     `Risk-adjusted annual margin: ${formatMoney(results.margin)}`,
-    `Breakeven monthly subscription per 10 units: ${formatMoney(results.breakevenMonthly, false)}`,
+    `Breakeven monthly subscription per 10 units: ${formatMoney(results.breakevenMonthly)}`,
     `Customer capex avoided: ${formatMoney(results.avoidedCapex)}`
   ].join("\n");
 }
@@ -1111,6 +1143,7 @@ function bindEvents() {
 function boot() {
   renderScenarioRows();
   initPageTabs();
+  initMoneyInputs();
   bindEvents();
   applyPreset("launch");
   initAccessGate();
