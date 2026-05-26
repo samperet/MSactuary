@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MedicSolution Actuarial Scenario Calculator</title>
+    <link rel="stylesheet" href="medicsolution-calculator.css" />
+  </head>
+  <body>
+    <main class="scenario-app" id="top">
+      <aside class="assumption-panel" aria-label="Model assumptions">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">MS</span>
+          <div>
+            <strong>MedicSolution</strong>
+            <span>Capacity-as-a-service model</span>
+          </div>
+        </div>
+
+        <section class="control-group" id="portfolio-controls">
+          <div class="control-heading">
+            <p class="eyebrow">Portfolio</p>
+            <button id="reset-model" type="button" class="ghost-button">Reset</button>
+          </div>
+
+          <label class="field">
+            <span>Scenario preset</span>
+            <select id="preset">
+              <option value="launch">Balanced launch pool</option>
+              <option value="state">State disaster readiness</option>
+              <option value="fema">National emergency pool</option>
+              <option value="hospital">Hospital network overflow</option>
+              <option value="event">Large event standby</option>
+            </select>
+          </label>
+
+          <div class="range-field">
+            <label for="customers">Subscribed customers</label>
+            <output id="customers-output">16</output>
+            <input id="customers" type="range" min="1" max="80" step="1" value="16" />
+          </div>
+
+          <div class="range-field">
+            <label for="guaranteed-units">Guaranteed units per customer</label>
+            <output id="guaranteed-units-output">6</output>
+            <input id="guaranteed-units" type="range" min="1" max="20" step="1" value="6" />
+          </div>
+
+          <div class="range-field">
+            <label for="fleet-units">Owned fleet units</label>
+            <output id="fleet-units-output">52</output>
+            <input id="fleet-units" type="range" min="4" max="260" step="1" value="52" />
+          </div>
+
+          <div class="split-fields">
+            <label class="field">
+              <span>Confidence target</span>
+              <select id="confidence-level">
+                <option value="0.8">P80</option>
+                <option value="0.9" selected>P90</option>
+                <option value="0.95">P95</option>
+                <option value="0.99">P99</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>SLA</span>
+              <select id="sla-hours">
+                <option value="24">24 hr</option>
+                <option value="48">48 hr</option>
+                <option value="72" selected>72 hr</option>
+                <option value="120">5 day</option>
+                <option value="168">7 day</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="range-field">
+            <label for="reserve-pct">Fleet held immediately ready</label>
+            <output id="reserve-pct-output">38%</output>
+            <input id="reserve-pct" type="range" min="0" max="80" step="1" value="38" />
+          </div>
+
+          <div class="range-field">
+            <label for="correlation-stress">Regional correlation stress</label>
+            <output id="correlation-stress-output">35%</output>
+            <input id="correlation-stress" type="range" min="0" max="100" step="1" value="35" />
+          </div>
+        </section>
+
+        <section class="control-group" id="economics-controls">
+          <p class="eyebrow">Economics</p>
+          <div class="money-grid">
+            <label class="field">
+              <span>Monthly subscription per 10 units</span>
+              <input id="monthly-subscription" type="number" min="0" step="10000" value="200000" />
+            </label>
+            <label class="field">
+              <span>Purchase cost per unit</span>
+              <input id="unit-cost" type="number" min="0" step="50000" value="2000000" />
+            </label>
+            <label class="field">
+              <span>Deployment fee per unit-day</span>
+              <input id="deployment-fee" type="number" min="0" step="500" value="9500" />
+            </label>
+            <label class="field">
+              <span>Commercial rental per unit-day</span>
+              <input id="rental-rate" type="number" min="0" step="500" value="7500" />
+            </label>
+          </div>
+
+          <div class="range-field">
+            <label for="commercial-utilization">Commercial utilization of non-reserve fleet</label>
+            <output id="commercial-utilization-output">42%</output>
+            <input id="commercial-utilization" type="range" min="0" max="90" step="1" value="42" />
+          </div>
+
+          <div class="split-fields">
+            <label class="field">
+              <span>Annual capital charge</span>
+              <input id="capital-charge" type="number" min="0" max="60" step="0.5" value="14" />
+            </label>
+            <label class="field">
+              <span>Maintenance rate</span>
+              <input id="maintenance-rate" type="number" min="0" max="20" step="0.25" value="4" />
+            </label>
+          </div>
+
+          <details class="advanced">
+            <summary>Advanced cost assumptions</summary>
+            <label class="field">
+              <span>Operating cost per unit-day</span>
+              <input id="unit-day-cost" type="number" min="0" step="250" value="2400" />
+            </label>
+            <label class="field">
+              <span>Storage and insurance per unit-year</span>
+              <input id="storage-insurance" type="number" min="0" step="5000" value="45000" />
+            </label>
+            <label class="field">
+              <span>Logistics hubs</span>
+              <input id="hubs" type="number" min="1" max="8" step="1" value="2" />
+            </label>
+            <label class="field">
+              <span>Cost per hub-year</span>
+              <input id="hub-cost" type="number" min="0" step="50000" value="1200000" />
+            </label>
+            <label class="field">
+              <span>Shortfall penalty per unit-day</span>
+              <input id="shortfall-penalty" type="number" min="0" step="5000" value="75000" />
+            </label>
+          </details>
+        </section>
+      </aside>
+
+      <section class="analysis-stage">
+        <header class="stage-header" id="model-thesis">
+          <div>
+            <p class="eyebrow">Actuarial calculator</p>
+            <h1>Emergency capacity subscription analysis</h1>
+          </div>
+          <div class="stage-actions">
+            <p class="model-note">
+              Illustrative planning model using stochastic event frequency, duration, severity, correlated shocks,
+              recallable fleet capacity, and annualized economics.
+            </p>
+            <button id="start-walkthrough" type="button" class="solid-button walkthrough-button">Start walkthrough</button>
+          </div>
+        </header>
+
+        <section class="kpi-grid" id="kpi-grid" aria-label="Model outputs">
+          <article class="kpi-card kpi-card-strong">
+            <span>Fulfillment probability</span>
+            <strong id="kpi-fulfillment">0%</strong>
+            <small id="kpi-fulfillment-note">SLA-adjusted fleet adequacy</small>
+          </article>
+          <article class="kpi-card">
+            <span id="kpi-peak-label">P90 peak demand</span>
+            <strong id="kpi-peak">0</strong>
+            <small>simulated Max 24-equivalent units</small>
+          </article>
+          <article class="kpi-card">
+            <span>Required fleet</span>
+            <strong id="kpi-required">0</strong>
+            <small id="kpi-required-note">at confidence target</small>
+          </article>
+          <article class="kpi-card">
+            <span>Annual recurring revenue</span>
+            <strong id="kpi-arr">$0</strong>
+            <small>subscription revenue only</small>
+          </article>
+          <article class="kpi-card">
+            <span>Risk-adjusted margin</span>
+            <strong id="kpi-margin">$0</strong>
+            <small>after fleet, ops, and shortfall risk</small>
+          </article>
+          <article class="kpi-card">
+            <span>Customer capex avoided</span>
+            <strong id="kpi-capex">$0</strong>
+            <small>if subscribers bought guaranteed units</small>
+          </article>
+        </section>
+
+        <section class="decision-band" id="decision-band">
+          <div>
+            <p class="eyebrow">Decision signal</p>
+            <h2 id="decision-title">Model ready</h2>
+          </div>
+          <p id="decision-copy">Adjust the assumptions to evaluate capacity adequacy and economics.</p>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel panel-wide" id="demand-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Demand distribution</p>
+                <h2>Simulated peak emergency load</h2>
+              </div>
+              <span id="histogram-caption" class="caption-value">3,500 trials</span>
+            </div>
+            <div class="histogram" id="peak-histogram" aria-label="Peak demand histogram"></div>
+            <div class="chart-legend">
+              <span><i class="legend-dot demand"></i> Simulated peaks</span>
+              <span><i class="legend-line fleet"></i> SLA capacity</span>
+              <span><i class="legend-line target"></i> Confidence target</span>
+            </div>
+          </article>
+
+          <article class="panel" id="capacity-panel">
+            <div class="panel-heading compact">
+              <div>
+                <p class="eyebrow">Capacity</p>
+                <h2>Fleet stack</h2>
+              </div>
+            </div>
+            <div class="capacity-stack" id="capacity-stack"></div>
+          </article>
+
+          <article class="panel panel-wide" id="economics-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Economics</p>
+                <h2>Annual revenue and risk bridge</h2>
+              </div>
+              <span id="breakeven-caption" class="caption-value">$0 breakeven</span>
+            </div>
+            <div class="bar-chart" id="economics-chart"></div>
+          </article>
+
+          <article class="panel" id="efficiency-panel">
+            <div class="panel-heading compact">
+              <div>
+                <p class="eyebrow">Pooled access</p>
+                <h2>Efficiency</h2>
+              </div>
+            </div>
+            <dl class="stat-list">
+              <div>
+                <dt>Standalone ownership</dt>
+                <dd id="stat-standalone">0 units</dd>
+              </div>
+              <div>
+                <dt>Pooled requirement</dt>
+                <dd id="stat-pooled">0 units</dd>
+              </div>
+              <div>
+                <dt>Fleet efficiency</dt>
+                <dd id="stat-efficiency">0%</dd>
+              </div>
+              <div>
+                <dt>Expected activations</dt>
+                <dd id="stat-activations">0 / yr</dd>
+              </div>
+              <div>
+                <dt>Expected emergency unit-days</dt>
+                <dd id="stat-unit-days">0</dd>
+              </div>
+            </dl>
+          </article>
+        </section>
+
+        <section class="panel" id="scenario-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Scenario mix</p>
+              <h2>Event assumptions</h2>
+            </div>
+            <button id="copy-summary" type="button" class="solid-button">Copy summary</button>
+          </div>
+
+          <div class="scenario-table-wrap">
+            <table class="scenario-table">
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>Annual frequency per customer</th>
+                  <th>Avg duration</th>
+                  <th>Units per event</th>
+                  <th>Severity variation</th>
+                  <th>Expected unit-days</th>
+                </tr>
+              </thead>
+              <tbody id="scenario-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="financial-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Model trace</p>
+              <h2>Financial outputs</h2>
+            </div>
+          </div>
+          <div class="financial-grid" id="financial-grid"></div>
+        </section>
+      </section>
+    </main>
+
+    <div class="tour-scrim" id="tour-scrim" hidden></div>
+    <section class="tour-panel" id="tour-panel" role="dialog" aria-labelledby="tour-title" aria-live="polite" tabindex="-1" hidden>
+      <div class="tour-topline">
+        <span id="tour-progress">Step 1 of 12</span>
+        <button id="tour-close" type="button" aria-label="Close walkthrough">&times;</button>
+      </div>
+      <h2 id="tour-title">What this model is testing</h2>
+      <p id="tour-copy"></p>
+      <ul id="tour-points"></ul>
+      <div class="tour-actions">
+        <button id="tour-prev" type="button" class="ghost-button">Back</button>
+        <button id="tour-next" type="button" class="solid-button">Next</button>
+      </div>
+    </section>
+
+    <script src="medicsolution-calculator.js"></script>
+  </body>
+</html>
