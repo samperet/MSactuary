@@ -1,0 +1,151 @@
+/* UI kit shared styles for the MedicSolution website recreation. */
+@import url("../../colors_and_type.css");
+
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  color: var(--fg-1);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; }
+
+/* Container */
+.container { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+.narrow { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: background var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--ms-navy-700);
+  color: #fff;
+  border-color: var(--ms-navy-700);
+}
+.btn-primary:hover { background: var(--ms-navy-900); border-color: var(--ms-navy-900); }
+.btn-secondary {
+  background: transparent;
+  color: var(--ms-navy-700);
+  border-color: var(--ms-navy-700);
+}
+.btn-secondary:hover { background: var(--ms-navy-700); color: #fff; }
+.btn-on-dark {
+  background: #fff;
+  color: var(--ms-navy-700);
+  border-color: #fff;
+}
+.btn-on-dark:hover { background: transparent; color: #fff; border-color: #fff; }
+.btn-link {
+  background: transparent;
+  color: var(--ms-navy-700);
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid currentColor;
+  font-weight: 500;
+}
+.btn-link:hover { color: var(--ms-indigo-600); }
+
+/* Eyebrow */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ms-navy-700);
+}
+.eyebrow.light { color: rgba(255,255,255,0.7); }
+
+/* Section padding */
+.section { padding: 96px 0; }
+.section-tight { padding: 64px 0; }
+
+/* Brand rule */
+.brand-rule {
+  width: 64px;
+  height: 2px;
+  background: var(--ms-navy-700);
+  margin-bottom: 24px;
+}
+.brand-rule.light { background: #fff; }
+
+/* Heading utilities */
+.h-display {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.02;
+  font-weight: 500;
+  letter-spacing: -0.024em;
+}
+.h-1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+}
+.h-2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.5vw, 32px);
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.lede {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--fg-2);
+  max-width: 56ch;
+}
+
+/* Card */
+.card-outlined {
+  background: #fff;
+  border: 1px solid var(--border-1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+.card-outlined:hover {
+  box-shadow: var(--shadow-2);
+  border-color: transparent;
+}
+
+/* Eyebrow strip / vertical rule above headings */
+.eyebrow-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.eyebrow-strip::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--ms-navy-700);
+}
+
+/* Top stripe — appears on most subpages */
+.top-stripe {
+  height: 4px;
+  background: var(--ms-navy-700);
+}

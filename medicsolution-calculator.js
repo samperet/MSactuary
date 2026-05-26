@@ -149,6 +149,9 @@ const defaultEconomics = {
   shortfallPenalty: 75000
 };
 
+const AUTH_STORAGE_KEY = "medicsolution-calculator-unlocked";
+const AUTH_HASH = "18ce790d527c9299c254275cf3cc83f02e072fef5c7bb5e42c1fa90fac569acf";
+
 const tourSteps = [
   {
     target: "#model-thesis",
@@ -316,6 +319,117 @@ function formatNumber(value, digits = 0) {
 
 function formatPercent(value, digits = 0) {
   return `${(value * 100).toFixed(digits)}%`;
+}
+
+function bufferToHex(buffer) {
+  return Array.from(new Uint8Array(buffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function hashText(value) {
+  const payload = new TextEncoder().encode(value);
+  const digest = await window.crypto.subtle.digest("SHA-256", payload);
+  return bufferToHex(digest);
+}
+
+async function passwordMatches(value) {
+  if (!window.crypto?.subtle) return false;
+  return (await hashText(value.trim())) === AUTH_HASH;
+}
+
+function setAuthenticated(isAuthenticated) {
+  const app = $(".scenario-app");
+  const accessScreen = $("#access-screen");
+  const passwordInput = $("#access-password");
+
+  document.body.classList.toggle("is-locked", !isAuthenticated);
+  if (app) app.hidden = !isAuthenticated;
+  if (accessScreen) accessScreen.hidden = isAuthenticated;
+
+  if (isAuthenticated) {
+    activatePage($(".menu-tab.is-active")?.dataset.pageTab || "overview");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+    return;
+  }
+
+  if ($("#tour-panel") && !$("#tour-panel").hidden) closeTour();
+  window.requestAnimationFrame(() => passwordInput?.focus());
+}
+
+function initAccessGate() {
+  const form = $("#access-form");
+  const input = $("#access-password");
+  const error = $("#access-error");
+  const lockButton = $("#lock-app");
+
+  setAuthenticated(window.sessionStorage.getItem(AUTH_STORAGE_KEY) === "true");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submitButton = form.querySelector("button[type='submit']");
+    if (submitButton) submitButton.disabled = true;
+
+    const valid = await passwordMatches(input.value);
+    if (valid) {
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
+      input.value = "";
+      if (error) error.hidden = true;
+      setAuthenticated(true);
+    } else {
+      window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      if (error) error.hidden = false;
+      input.select();
+    }
+
+    if (submitButton) submitButton.disabled = false;
+  });
+
+  lockButton?.addEventListener("click", () => {
+    window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    setAuthenticated(false);
+  });
+}
+
+function activatePage(pageName, shouldScroll = false) {
+  $$(".menu-page").forEach((page) => {
+    const active = page.dataset.page === pageName;
+    page.hidden = !active;
+    page.classList.toggle("is-active", active);
+  });
+
+  $$("[data-page-tab]").forEach((tab) => {
+    const active = tab.dataset.pageTab === pageName;
+    tab.classList.toggle("is-active", active);
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+
+  if (shouldScroll) {
+    $(".page-shell")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function initPageTabs() {
+  const tabs = $$("[data-page-tab]");
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activatePage(tab.dataset.pageTab, true));
+    tab.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+
+      let nextIndex = index;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+
+      const nextTab = tabs[nextIndex];
+      activatePage(nextTab.dataset.pageTab, true);
+      nextTab.focus();
+    });
+  });
 }
 
 function escapeHtml(value) {
@@ -661,6 +775,11 @@ function renderTourStep() {
   const target = $(step.target);
   clearTourFocus();
 
+  const targetPage = target?.closest(".menu-page");
+  if (targetPage?.dataset.page) {
+    activatePage(targetPage.dataset.page);
+  }
+
   $("#tour-progress").textContent = `Step ${tourIndex + 1} of ${tourSteps.length}`;
   $("#tour-title").textContent = step.title;
   $("#tour-copy").textContent = step.copy;
@@ -982,7 +1101,7 @@ function bindEvents() {
     if (event.key === "ArrowRight") moveTour(1);
   });
 
-  $$("input, select").forEach((node) => {
+  $$(".scenario-app input, .scenario-app select").forEach((node) => {
     if (node.id === "preset") return;
     node.addEventListener("input", scheduleUpdate);
     node.addEventListener("change", scheduleUpdate);
@@ -991,8 +1110,10 @@ function bindEvents() {
 
 function boot() {
   renderScenarioRows();
+  initPageTabs();
   bindEvents();
   applyPreset("launch");
+  initAccessGate();
 }
 
 boot();

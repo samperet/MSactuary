@@ -1,0 +1,326 @@
+/* =============================================================================
+   MedicSolution Design System — Colors & Type
+   -----------------------------------------------------------------------------
+   Visual language derived from medicsolution.com and the MAX24 sub-brand.
+   Engineering-led, Swedish-clinical, navy-forward, with high white-space and
+   serious, photographic moments.
+   ========================================================================== */
+
+/* ---- Fonts (Google Fonts substitutes — see README for licensed originals) -- */
+@import url("https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+
+  /* ===========================================================================
+     COLOR — primitives
+     ----------------------------------------------------------------------------
+     The brand anchor is the navy taken directly from the MS+ symbol (#0b426a).
+     Everything else builds out a calm clinical palette around it.
+     ======================================================================== */
+
+  /* Navy — the brand anchor. Used for logos, headers, hero plates, primary CTAs */
+  --ms-navy-900: #051d31;   /* deepest — body text on light, hover state */
+  --ms-navy-800: #072b46;
+  --ms-navy-700: #0b426a;   /* ⭐ THE brand color — logo, primary surfaces */
+  --ms-navy-600: #1b5c89;
+  --ms-navy-500: #2f7aac;
+  --ms-navy-400: #5e9fcb;
+  --ms-navy-300: #94c0de;
+  --ms-navy-200: #c7dcec;
+  --ms-navy-100: #e6eef6;
+  --ms-navy-050: #f3f7fb;
+
+  /* Indigo — digital / preparedness accent (from msapplication tile + MAX24 vibe).
+     Used sparingly: hover links, MAX24 sub-brand callouts, focus rings. */
+  --ms-indigo-700: #2a2aa6;
+  --ms-indigo-600: #3837cc;
+  --ms-indigo-500: #5a59dd;
+  --ms-indigo-200: #d1d1f5;
+
+  /* Steel — cool neutrals for surfaces, dividers, secondary text */
+  --ms-steel-900: #0a1820;
+  --ms-steel-800: #1c2a35;
+  --ms-steel-700: #3c4d5b;
+  --ms-steel-600: #56697a;
+  --ms-steel-500: #7c8d9c;
+  --ms-steel-400: #a0afbb;
+  --ms-steel-300: #c4ced6;
+  --ms-steel-200: #dee5eb;
+  --ms-steel-100: #eef2f5;
+  --ms-steel-050: #f6f8fa;
+
+  /* Bone — warm off-white from the MAX24 module exterior. Used for editorial
+     pages and as a softer alternative to pure white. */
+  --ms-bone-300: #e6dfd0;
+  --ms-bone-200: #ede7da;
+  --ms-bone-100: #f4f1ea;
+  --ms-bone-050: #fbf9f5;
+
+  --ms-white: #ffffff;
+  --ms-black: #000000;
+
+  /* Clinical accents — pulled from product photography (surgical drape blue,
+     hi-vis safety, modular interior). Used in data viz, status, sub-brand. */
+  --ms-clinical-blue: #7fb1e0;   /* surgical drape */
+  --ms-clinical-mint: #c5e0d4;   /* clean room green tint */
+  --ms-hi-vis:        #d7ee3a;   /* construction yellow-green */
+  --ms-warm-tan:      #d8c9a8;   /* module exterior cream */
+
+  /* Semantic */
+  --ms-success: #1f8a5b;
+  --ms-warning: #c47b16;
+  --ms-danger:  #b3261e;
+  --ms-info:    var(--ms-navy-600);
+
+
+  /* ===========================================================================
+     COLOR — semantic / role tokens
+     ======================================================================== */
+
+  /* Foreground */
+  --fg-1: var(--ms-steel-900);    /* primary body text */
+  --fg-2: var(--ms-steel-700);    /* secondary body */
+  --fg-3: var(--ms-steel-500);    /* tertiary, captions, meta */
+  --fg-4: var(--ms-steel-400);    /* disabled, placeholder */
+  --fg-on-navy: var(--ms-white);
+  --fg-brand: var(--ms-navy-700);
+  --fg-link: var(--ms-navy-700);
+  --fg-link-hover: var(--ms-indigo-600);
+
+  /* Background */
+  --bg-1: var(--ms-white);        /* primary page surface */
+  --bg-2: var(--ms-steel-050);    /* secondary surface, alt rows */
+  --bg-3: var(--ms-steel-100);    /* tertiary, cards on alt sections */
+  --bg-bone: var(--ms-bone-100);  /* editorial / about pages */
+  --bg-navy: var(--ms-navy-700);  /* hero plates, footers */
+  --bg-navy-deep: var(--ms-navy-900);
+
+  /* Border */
+  --border-1: var(--ms-steel-200);
+  --border-2: var(--ms-steel-300);
+  --border-strong: var(--ms-steel-700);
+  --border-on-navy: rgba(255, 255, 255, 0.16);
+
+  /* Focus */
+  --focus-ring: var(--ms-indigo-600);
+
+
+  /* ===========================================================================
+     TYPOGRAPHY
+     ----------------------------------------------------------------------------
+     Two voices: a Swedish-grotesque DISPLAY (headlines, numbers, wayfinding)
+     and a calmer humanist SANS for body. Mono for technical specs / dimensions.
+
+     Substitutes — see README ▸ Typography for licensed originals to swap in.
+     ======================================================================== */
+
+  --font-display: "Familjen Grotesk", "Söhne", "Inter Tight", system-ui, sans-serif;
+  --font-body:    "IBM Plex Sans", "Söhne", system-ui, -apple-system, sans-serif;
+  --font-mono:    "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* Type scale — modular, 1.250 minor third for body, 1.333 perfect fourth for display */
+  --fs-12: 0.75rem;     /* 12 — captions, eyebrow labels */
+  --fs-14: 0.875rem;    /* 14 — meta, small body */
+  --fs-16: 1rem;        /* 16 — body */
+  --fs-18: 1.125rem;    /* 18 — large body / lede */
+  --fs-20: 1.25rem;     /* 20 — section subheads */
+  --fs-24: 1.5rem;      /* 24 — h4 */
+  --fs-30: 1.875rem;    /* 30 — h3 */
+  --fs-36: 2.25rem;     /* 36 — h2 */
+  --fs-48: 3rem;        /* 48 — h1 */
+  --fs-64: 4rem;        /* 64 — display */
+  --fs-80: 5rem;        /* 80 — hero */
+  --fs-128: 8rem;       /* 128 — statistic numerals */
+
+  /* Line heights */
+  --lh-tight: 1.05;     /* hero/display */
+  --lh-snug: 1.18;      /* headings */
+  --lh-normal: 1.5;     /* body */
+  --lh-loose: 1.65;     /* editorial body */
+
+  /* Tracking */
+  --tracking-tight: -0.022em;   /* display */
+  --tracking-snug:  -0.012em;   /* headings */
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;      /* eyebrows, all-caps labels */
+  --tracking-wider: 0.14em;
+
+
+  /* ===========================================================================
+     SPACING — 4px base, with named t-shirt sizes for layout
+     ======================================================================== */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-40: 160px;
+
+  /* Layout */
+  --container-max: 1320px;
+  --container-narrow: 880px;
+  --gutter: 32px;
+
+
+  /* ===========================================================================
+     RADII — quite restrained. Modular construction = mostly square corners.
+     ======================================================================== */
+  --radius-0: 0;
+  --radius-1: 2px;        /* default surface — barely-there softening */
+  --radius-2: 4px;        /* buttons, inputs */
+  --radius-3: 8px;        /* cards */
+  --radius-4: 12px;       /* large cards / hero plates */
+  --radius-pill: 999px;
+
+
+  /* ===========================================================================
+     SHADOWS / ELEVATION — minimal, almost flat. The brand reads engineered.
+     ======================================================================== */
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(7, 27, 46, 0.06), 0 1px 1px rgba(7, 27, 46, 0.04);
+  --shadow-2: 0 2px 8px rgba(7, 27, 46, 0.08);
+  --shadow-3: 0 8px 24px rgba(7, 27, 46, 0.10);
+  --shadow-4: 0 18px 48px rgba(7, 27, 46, 0.14);
+  --shadow-inset: inset 0 0 0 1px var(--border-1);
+
+
+  /* ===========================================================================
+     MOTION — short, no-nonsense. Modules don't bounce.
+     ======================================================================== */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.5, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 360ms;
+}
+
+
+/* =============================================================================
+   SEMANTIC ELEMENT STYLES — apply by default, the brand "out of the box"
+   ========================================================================== */
+
+html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: var(--lh-normal);
+  color: var(--fg-1);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings — display face, tight tracking, navy on light */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--fg-1);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-snug);
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--fs-64);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: 500;
+}
+h2 { font-size: var(--fs-48); font-weight: 500; }
+h3 { font-size: var(--fs-30); font-weight: 500; }
+h4 { font-size: var(--fs-24); font-weight: 500; }
+h5 { font-size: var(--fs-18); font-weight: 600; letter-spacing: var(--tracking-normal); }
+h6 {
+  font-size: var(--fs-12);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* Body copy */
+p {
+  margin: 0 0 1em;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+p.lede {
+  font-size: var(--fs-20);
+  line-height: var(--lh-loose);
+  color: var(--fg-2);
+  max-width: 56ch;
+}
+p.small { font-size: var(--fs-14); color: var(--fg-2); }
+
+/* Links — understated; underline only on hover, navy by default */
+a {
+  color: var(--fg-link);
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover { color: var(--fg-link-hover); text-decoration: underline; }
+
+/* Lists */
+ul, ol { padding-left: 1.25em; margin: 0 0 1em; }
+li { margin-bottom: 0.25em; }
+
+/* Code / mono */
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+code {
+  background: var(--bg-3);
+  padding: 0.12em 0.36em;
+  border-radius: var(--radius-2);
+}
+
+/* Eyebrow / kicker — used heavily for section labels in the brand */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--ms-navy-700);
+}
+
+/* Stat number — display face, very large, tabular numerals (used heavily
+   in the website's "100%, 40+, 30+, 0%" Swedish-quality block) */
+.stat {
+  font-family: var(--font-display);
+  font-size: var(--fs-80);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  color: var(--ms-navy-700);
+}
+
+/* Rule — thin, navy, often used to anchor section heads */
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-1);
+  margin: var(--space-12) 0;
+}
+hr.brand {
+  height: 2px;
+  background: var(--ms-navy-700);
+  width: 64px;
+  margin: 0 0 var(--space-6);
+}
