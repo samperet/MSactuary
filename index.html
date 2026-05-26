@@ -70,34 +70,49 @@
             </aside>
           </section>
 
+          <section class="model-context" aria-label="Model context">
+            <article>
+              <span>Service test</span>
+              <strong>Can the SLA-accessible fleet cover simulated emergency peaks?</strong>
+            </article>
+            <article>
+              <span>Finance test</span>
+              <strong>Can readiness fees and usage revenue carry the owned-asset burden?</strong>
+            </article>
+            <article>
+              <span>Pooling test</span>
+              <strong>How much fleet can shared access save versus standalone ownership?</strong>
+            </article>
+          </section>
+
           <section class="kpi-grid" id="kpi-grid" aria-label="Model outputs">
             <article class="kpi-card kpi-card-strong">
-              <span>Fulfilment probability</span>
+              <span class="with-info">Fulfilment probability <i class="info-dot" tabindex="0" aria-label="Share of simulated years where emergency peak demand is fully served inside the selected SLA." data-tooltip="Share of simulated years where emergency peak demand is fully served inside the selected SLA.">i</i></span>
               <strong id="kpi-fulfillment">0%</strong>
               <small id="kpi-fulfillment-note">SLA-adjusted fleet adequacy</small>
             </article>
             <article class="kpi-card">
-              <span id="kpi-peak-label">P90 peak demand</span>
+              <span class="with-info"><span id="kpi-peak-label">P90 peak demand</span> <i class="info-dot" tabindex="0" aria-label="The simulated peak demand level at the selected confidence target." data-tooltip="The simulated peak demand level at the selected confidence target.">i</i></span>
               <strong id="kpi-peak">0</strong>
               <small>simulated MAX24-equivalent units</small>
             </article>
             <article class="kpi-card">
-              <span>Required fleet</span>
+              <span class="with-info">Required fleet <i class="info-dot" tabindex="0" aria-label="The fleet size needed to meet the selected confidence threshold before SLA recall limits are applied." data-tooltip="The fleet size needed to meet the selected confidence threshold before SLA recall limits are applied.">i</i></span>
               <strong id="kpi-required">0</strong>
               <small id="kpi-required-note">at confidence target</small>
             </article>
             <article class="kpi-card">
-              <span>Annual recurring revenue</span>
+              <span class="with-info">Annual recurring revenue <i class="info-dot" tabindex="0" aria-label="Subscription readiness revenue before deployment fees or commercial rental revenue." data-tooltip="Subscription readiness revenue before deployment fees or commercial rental revenue.">i</i></span>
               <strong id="kpi-arr">$0</strong>
               <small>subscription revenue only</small>
             </article>
             <article class="kpi-card">
-              <span>Risk-adjusted margin</span>
+              <span class="with-info">Risk-adjusted margin <i class="info-dot" tabindex="0" aria-label="Annual margin after fleet capital, maintenance, logistics, operating cost, and expected shortfall reserve." data-tooltip="Annual margin after fleet capital, maintenance, logistics, operating cost, and expected shortfall reserve.">i</i></span>
               <strong id="kpi-margin">$0</strong>
               <small>after fleet, operations, and shortfall risk</small>
             </article>
             <article class="kpi-card">
-              <span>Customer capex avoided</span>
+              <span class="with-info">Customer capex avoided <i class="info-dot" tabindex="0" aria-label="Estimated purchase cost subscribers avoid by buying guaranteed access instead of owning all reserved units." data-tooltip="Estimated purchase cost subscribers avoid by buying guaranteed access instead of owning all reserved units.">i</i></span>
               <strong id="kpi-capex">$0</strong>
               <small>if subscribers bought guaranteed units</small>
             </article>
@@ -115,12 +130,16 @@
             <article class="panel panel-wide" id="demand-panel">
               <div class="panel-heading">
                 <div>
-                  <p class="eyebrow">Demand distribution</p>
+                  <p class="eyebrow with-info">Demand distribution <i class="info-dot" tabindex="0" aria-label="Distribution of annual emergency peak demand across all stochastic trials." data-tooltip="Distribution of annual emergency peak demand across all stochastic trials.">i</i></p>
                   <h2>Simulated peak emergency load</h2>
                 </div>
                 <span id="histogram-caption" class="caption-value">3,500 trials</span>
               </div>
-              <div class="histogram" id="peak-histogram" aria-label="Peak demand histogram"></div>
+              <div class="chart-frame histogram-frame">
+                <span class="axis-title axis-title-y">Simulated years</span>
+                <div class="histogram" id="peak-histogram" aria-label="Peak demand histogram"></div>
+                <span class="axis-title axis-title-x">Peak emergency demand (MAX24-equivalent units)</span>
+              </div>
               <div class="chart-legend">
                 <span><i class="legend-dot demand"></i> Simulated peaks</span>
                 <span><i class="legend-line fleet"></i> SLA capacity</span>
@@ -131,7 +150,7 @@
             <article class="panel" id="capacity-panel">
               <div class="panel-heading compact">
                 <div>
-                  <p class="eyebrow">Capacity</p>
+                  <p class="eyebrow with-info">Capacity <i class="info-dot" tabindex="0" aria-label="Compares owned units, immediately ready units, recalled units, and the target demand threshold." data-tooltip="Compares owned units, immediately ready units, recalled units, and the target demand threshold.">i</i></p>
                   <h2>Fleet stack</h2>
                 </div>
               </div>
@@ -158,7 +177,7 @@
               </div>
 
               <label class="field">
-                <span>Scenario preset</span>
+                <span class="with-info">Scenario preset <i class="info-dot" tabindex="0" aria-label="Preset packages adjust customer count, fleet promise, stress, and event assumptions together." data-tooltip="Preset packages adjust customer count, fleet promise, stress, and event assumptions together.">i</i></span>
                 <select id="preset">
                   <option value="launch">Balanced launch pool</option>
                   <option value="state">State disaster readiness</option>
@@ -169,26 +188,26 @@
               </label>
 
               <div class="range-field">
-                <label for="customers">Subscribed customers</label>
+                <label class="with-info" for="customers">Subscribed customers <i class="info-dot" tabindex="0" aria-label="Number of agencies, systems, or customers paying for access to the pooled fleet." data-tooltip="Number of agencies, systems, or customers paying for access to the pooled fleet.">i</i></label>
                 <output id="customers-output">16</output>
                 <input id="customers" type="range" min="1" max="80" step="1" value="16" />
               </div>
 
               <div class="range-field">
-                <label for="guaranteed-units">Guaranteed units per customer</label>
+                <label class="with-info" for="guaranteed-units">Guaranteed units per customer <i class="info-dot" tabindex="0" aria-label="Contracted access promise per customer, not a one-for-one owned-fleet requirement." data-tooltip="Contracted access promise per customer, not a one-for-one owned-fleet requirement.">i</i></label>
                 <output id="guaranteed-units-output">6</output>
                 <input id="guaranteed-units" type="range" min="1" max="20" step="1" value="6" />
               </div>
 
               <div class="range-field">
-                <label for="fleet-units">Owned fleet units</label>
+                <label class="with-info" for="fleet-units">Owned fleet units <i class="info-dot" tabindex="0" aria-label="Total physical unit pool before reserve, rental utilisation, and recall assumptions." data-tooltip="Total physical unit pool before reserve, rental utilisation, and recall assumptions.">i</i></label>
                 <output id="fleet-units-output">52</output>
                 <input id="fleet-units" type="range" min="4" max="260" step="1" value="52" />
               </div>
 
               <div class="split-fields">
                 <label class="field">
-                  <span>Confidence target</span>
+                  <span class="with-info">Confidence target <i class="info-dot" tabindex="0" aria-label="Demand percentile the fleet is asked to cover, such as P90 or P95." data-tooltip="Demand percentile the fleet is asked to cover, such as P90 or P95.">i</i></span>
                   <select id="confidence-level">
                     <option value="0.8">P80</option>
                     <option value="0.9" selected>P90</option>
@@ -198,7 +217,7 @@
                 </label>
 
                 <label class="field">
-                  <span>SLA</span>
+                  <span class="with-info">SLA <i class="info-dot" tabindex="0" aria-label="Response window used to decide how much non-reserve fleet can be recalled in time." data-tooltip="Response window used to decide how much non-reserve fleet can be recalled in time.">i</i></span>
                   <select id="sla-hours">
                     <option value="24">24 hr</option>
                     <option value="48">48 hr</option>
@@ -210,13 +229,13 @@
               </div>
 
               <div class="range-field">
-                <label for="reserve-pct">Fleet held immediately ready</label>
+                <label class="with-info" for="reserve-pct">Fleet held immediately ready <i class="info-dot" tabindex="0" aria-label="Fleet percentage withheld from ordinary rental use so it can deploy immediately." data-tooltip="Fleet percentage withheld from ordinary rental use so it can deploy immediately.">i</i></label>
                 <output id="reserve-pct-output">38%</output>
                 <input id="reserve-pct" type="range" min="0" max="80" step="1" value="38" />
               </div>
 
               <div class="range-field">
-                <label for="correlation-stress">Regional correlation stress</label>
+                <label class="with-info" for="correlation-stress">Regional correlation stress <i class="info-dot" tabindex="0" aria-label="Stress factor for clustered demand where multiple customers need units at the same time." data-tooltip="Stress factor for clustered demand where multiple customers need units at the same time.">i</i></label>
                 <output id="correlation-stress-output">35%</output>
                 <input id="correlation-stress" type="range" min="0" max="100" step="1" value="35" />
               </div>
@@ -232,36 +251,36 @@
 
               <div class="money-grid">
                 <label class="field">
-                  <span>Monthly subscription per 10 units</span>
+                  <span class="with-info">Monthly subscription per 10 units <i class="info-dot" tabindex="0" aria-label="Recurring readiness fee charged for guaranteed access to ten units." data-tooltip="Recurring readiness fee charged for guaranteed access to ten units.">i</i></span>
                   <input id="monthly-subscription" type="text" inputmode="numeric" value="200000" />
                 </label>
                 <label class="field">
-                  <span>Purchase cost per unit</span>
+                  <span class="with-info">Purchase cost per unit <i class="info-dot" tabindex="0" aria-label="Owned-asset replacement cost used for capex avoided and annual capital charge." data-tooltip="Owned-asset replacement cost used for capex avoided and annual capital charge.">i</i></span>
                   <input id="unit-cost" type="text" inputmode="numeric" value="2000000" />
                 </label>
                 <label class="field">
-                  <span>Deployment fee per unit-day</span>
+                  <span class="with-info">Deployment fee per unit-day <i class="info-dot" tabindex="0" aria-label="Usage-based emergency revenue collected while units are activated." data-tooltip="Usage-based emergency revenue collected while units are activated.">i</i></span>
                   <input id="deployment-fee" type="text" inputmode="numeric" value="9500" />
                 </label>
                 <label class="field">
-                  <span>Commercial rental per unit-day</span>
+                  <span class="with-info">Commercial rental per unit-day <i class="info-dot" tabindex="0" aria-label="Ordinary rental revenue earned by non-reserve units when not needed for an emergency." data-tooltip="Ordinary rental revenue earned by non-reserve units when not needed for an emergency.">i</i></span>
                   <input id="rental-rate" type="text" inputmode="numeric" value="7500" />
                 </label>
               </div>
 
               <div class="range-field">
-                <label for="commercial-utilization">Commercial utilisation of non-reserve fleet</label>
+                <label class="with-info" for="commercial-utilization">Commercial utilisation of non-reserve fleet <i class="info-dot" tabindex="0" aria-label="Share of non-reserved units assumed to earn ordinary rental revenue when not activated for emergencies." data-tooltip="Share of non-reserved units assumed to earn ordinary rental revenue when not activated for emergencies.">i</i></label>
                 <output id="commercial-utilization-output">42%</output>
                 <input id="commercial-utilization" type="range" min="0" max="90" step="1" value="42" />
               </div>
 
               <div class="split-fields">
                 <label class="field">
-                  <span>Annual capital charge</span>
+                  <span class="with-info">Annual capital charge <i class="info-dot" tabindex="0" aria-label="Annual percentage burden applied to owned fleet cost." data-tooltip="Annual percentage burden applied to owned fleet cost.">i</i></span>
                   <input id="capital-charge" type="number" min="0" max="60" step="0.5" value="14" />
                 </label>
                 <label class="field">
-                  <span>Maintenance rate</span>
+                  <span class="with-info">Maintenance rate <i class="info-dot" tabindex="0" aria-label="Annual maintenance percentage applied to owned fleet cost." data-tooltip="Annual maintenance percentage applied to owned fleet cost.">i</i></span>
                   <input id="maintenance-rate" type="number" min="0" max="20" step="0.25" value="4" />
                 </label>
               </div>
@@ -314,11 +333,11 @@
                 <thead>
                   <tr>
                     <th>Scenario</th>
-                    <th>Annual frequency per customer</th>
-                    <th>Average duration</th>
-                    <th>Units per event</th>
-                    <th>Severity variation</th>
-                    <th>Expected unit-days</th>
+                    <th class="with-info">Annual frequency per customer <i class="info-dot" tabindex="0" aria-label="Expected number of this event type per customer per year." data-tooltip="Expected number of this event type per customer per year.">i</i></th>
+                    <th class="with-info">Average duration <i class="info-dot" tabindex="0" aria-label="Average event length in days before severity variation is applied." data-tooltip="Average event length in days before severity variation is applied.">i</i></th>
+                    <th class="with-info">Units per event <i class="info-dot" tabindex="0" aria-label="Base MAX24-equivalent unit requirement before severity variation is applied." data-tooltip="Base MAX24-equivalent unit requirement before severity variation is applied.">i</i></th>
+                    <th class="with-info">Severity variation <i class="info-dot" tabindex="0" aria-label="Coefficient-like stress input that widens the simulated tail of units and duration." data-tooltip="Coefficient-like stress input that widens the simulated tail of units and duration.">i</i></th>
+                    <th class="with-info">Expected unit-days <i class="info-dot" tabindex="0" aria-label="Average annual unit-days produced by this event type across all trials." data-tooltip="Average annual unit-days produced by this event type across all trials.">i</i></th>
                   </tr>
                 </thead>
                 <tbody id="scenario-body"></tbody>
@@ -338,18 +357,23 @@
             <article class="panel panel-wide" id="economics-panel">
               <div class="panel-heading">
                 <div>
-                  <p class="eyebrow">Economics</p>
+                  <p class="eyebrow with-info">Economics <i class="info-dot" tabindex="0" aria-label="Revenue and cost items are shown as annual values. Negative bars are cost or risk reserve." data-tooltip="Revenue and cost items are shown as annual values. Negative bars are cost or risk reserve.">i</i></p>
                   <h2>Annual revenue and risk bridge</h2>
                 </div>
                 <span id="breakeven-caption" class="caption-value">$0 breakeven</span>
               </div>
-              <div class="bar-chart" id="economics-chart"></div>
+              <div class="chart-frame economics-frame">
+                <span class="axis-title axis-title-y">Line item</span>
+                <div class="bar-chart" id="economics-chart"></div>
+                <div class="chart-scale" id="economics-scale" aria-hidden="true"></div>
+                <span class="axis-title axis-title-x">Annual value (USD)</span>
+              </div>
             </article>
 
             <article class="panel" id="efficiency-panel">
               <div class="panel-heading compact">
                 <div>
-                  <p class="eyebrow">Pooled access</p>
+                  <p class="eyebrow with-info">Pooled access <i class="info-dot" tabindex="0" aria-label="Compares the shared fleet requirement to the units customers would otherwise need to buy alone." data-tooltip="Compares the shared fleet requirement to the units customers would otherwise need to buy alone.">i</i></p>
                   <h2>Efficiency</h2>
                 </div>
               </div>
@@ -423,6 +447,14 @@
           </section>
         </section>
       </div>
+
+      <footer class="app-footer" aria-label="Application footer">
+        <div>
+          <span>Prepared for</span>
+          <img src="assets/alps-logo.png" alt="ALPS" />
+        </div>
+        <p>Private actuarial planning model for emergency care capacity subscription analysis.</p>
+      </footer>
     </main>
 
     <div class="tour-scrim" id="tour-scrim" hidden></div>

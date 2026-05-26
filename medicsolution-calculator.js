@@ -323,6 +323,21 @@ function formatMoney(value) {
   }).format(value);
 }
 
+function formatMoneyCompact(value) {
+  const abs = Math.abs(value);
+  if (abs < 1000000) return formatMoney(value);
+
+  const divisor = abs >= 1000000000 ? 1000000000 : 1000000;
+  const suffix = divisor === 1000000000 ? "B" : "M";
+  const scaled = abs / divisor;
+  const digits = scaled < 100 && !Number.isInteger(scaled) ? 1 : 0;
+  const formatted = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: digits
+  }).format(scaled);
+
+  return `${value < 0 ? "-" : ""}$${formatted}${suffix}`;
+}
+
 function formatMoneyInput(value) {
   return formatMoney(parseNumber(value));
 }
@@ -471,6 +486,25 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function infoTip(copy) {
+  const escaped = escapeHtml(copy);
+  return `<i class="info-dot" tabindex="0" aria-label="${escaped}" title="${escaped}" data-tooltip="${escaped}">i</i>`;
+}
+
+function setCompactMoney(id, value) {
+  const node = document.getElementById(id);
+  if (!node) return;
+  node.textContent = formatMoneyCompact(value);
+  node.title = formatMoney(value);
+  node.setAttribute("aria-label", formatMoney(value));
+}
+
+function syncTooltipTitles() {
+  $$("[data-tooltip]").forEach((node) => {
+    node.title = node.dataset.tooltip;
+  });
 }
 
 function mulberry32(seed) {
@@ -903,6 +937,7 @@ function updateModel() {
   renderScenarioOutputs(results);
   renderFinancialGrid(results);
   renderEfficiencyStats(results);
+  syncTooltipTitles();
 }
 
 function renderKpis(results) {
@@ -913,9 +948,9 @@ function renderKpis(results) {
   $("#kpi-peak").textContent = formatNumber(results.requiredFleet);
   $("#kpi-required").textContent = formatNumber(results.requiredFleet);
   $("#kpi-required-note").textContent = `${formatNumber(Math.max(0, results.requiredFleet - results.slaCapacity), 1)} unit gap at target`;
-  $("#kpi-arr").textContent = formatMoney(results.subscriptionArr);
-  $("#kpi-margin").textContent = formatMoney(results.margin);
-  $("#kpi-capex").textContent = formatMoney(results.avoidedCapex);
+  setCompactMoney("kpi-arr", results.subscriptionArr);
+  setCompactMoney("kpi-margin", results.margin);
+  setCompactMoney("kpi-capex", results.avoidedCapex);
 }
 
 function renderDecision(results) {
@@ -963,7 +998,10 @@ function renderHistogram(results) {
   histogram.innerHTML = counts.map((count, index) => {
     const height = Math.max(2, (count / maxCount) * 100);
     const label = index % 4 === 0 ? Math.round((axisMax / bins) * index) : "";
-    return `<div class="histogram-bar" style="height:${height}%"><span>${label}</span></div>`;
+    const low = Math.round((axisMax / bins) * index);
+    const high = Math.round((axisMax / bins) * (index + 1));
+    const title = `${formatNumber(count)} simulated years with peak demand between ${formatNumber(low)} and ${formatNumber(high)} units`;
+    return `<div class="histogram-bar" title="${escapeHtml(title)}" style="height:${height}%"><span>${label}</span></div>`;
   }).join("");
 
   const markers = [
@@ -985,17 +1023,18 @@ function renderHistogram(results) {
 function renderCapacityStack(results) {
   const max = Math.max(results.assumptions.fleetUnits, results.requiredFleet, results.slaCapacity, 1);
   const shortfall = Math.max(0, results.requiredFleet - results.slaCapacity);
+  const requirement = `P${Math.round(results.assumptions.confidenceLevel * 100)} requirement`;
   const items = [
-    ["Owned fleet", results.assumptions.fleetUnits, "blue"],
-    ["Held immediately ready", results.reservedUnits, "teal"],
-    ["SLA-accessible capacity", results.slaCapacity, "green"],
-    [`P${Math.round(results.assumptions.confidenceLevel * 100)} requirement`, results.requiredFleet, "amber"],
-    ["Target shortfall", shortfall, "rust"]
+    ["Owned fleet", results.assumptions.fleetUnits, "blue", "Total physical units in the fleet before reserve or recall assumptions."],
+    ["Held immediately ready", results.reservedUnits, "teal", "Units kept ready for immediate emergency deployment."],
+    ["SLA-accessible capacity", results.slaCapacity, "green", "Reserve units plus recallable commercial units available inside the selected SLA window."],
+    [requirement, results.requiredFleet, "amber", "Demand level at the selected confidence target."],
+    ["Target shortfall", shortfall, "rust", "Gap between SLA-accessible capacity and the confidence-target requirement."]
   ];
 
-  $("#capacity-stack").innerHTML = items.map(([label, value, color]) => `
+  $("#capacity-stack").innerHTML = items.map(([label, value, color, hint]) => `
     <div class="stack-item">
-      <header><span>${label}</span><strong>${formatNumber(value, 1)}</strong></header>
+      <header><span class="with-info">${label} ${infoTip(hint)}</span><strong>${formatNumber(value, 1)}</strong></header>
       <div class="meter"><span class="${color}" style="width:${clamp((value / max) * 100, 0, 100)}%"></span></div>
     </div>
   `).join("");
@@ -1003,14 +1042,14 @@ function renderCapacityStack(results) {
 
 function renderEconomicsChart(results) {
   const rows = [
-    ["Subscription ARR", results.subscriptionArr, "revenue"],
-    ["Deployment fees", results.deploymentRevenue, "revenue"],
-    ["Commercial rental", results.commercialRevenue, "revenue"],
-    ["Fleet capital charge", -results.fleetCapitalCost, "cost"],
-    ["Maintenance, storage, hubs", -(results.maintenanceCost + results.storageCost + results.hubCost), "cost"],
-    ["Operating costs", -(results.emergencyOpsCost + results.commercialOpsCost), "cost"],
-    ["Shortfall risk reserve", -results.shortfallRiskCost, "cost"],
-    ["Risk-adjusted margin", results.margin, "margin"]
+    ["Subscription ARR", results.subscriptionArr, "revenue", "Recurring readiness revenue from subscribed customers."],
+    ["Deployment fees", results.deploymentRevenue, "revenue", "Usage revenue earned when emergency units are activated."],
+    ["Commercial rental", results.commercialRevenue, "revenue", "Ordinary rental revenue from non-reserve fleet capacity."],
+    ["Fleet capital charge", -results.fleetCapitalCost, "cost", "Annual capital burden on the owned fleet."],
+    ["Maintenance, storage, hubs", -(results.maintenanceCost + results.storageCost + results.hubCost), "cost", "Annual maintenance, storage, insurance, and logistics hub costs."],
+    ["Operating costs", -(results.emergencyOpsCost + results.commercialOpsCost), "cost", "Emergency and commercial unit-day operating costs."],
+    ["Shortfall risk reserve", -results.shortfallRiskCost, "cost", "Expected penalty reserve for simulated emergency shortfalls."],
+    ["Risk-adjusted margin", results.margin, "margin", "Annual revenue after fleet, operating, logistics, and expected shortfall costs."]
   ];
 
   const maxAbs = Math.max(...rows.map(([, value]) => Math.abs(value)), 1);
@@ -1018,16 +1057,24 @@ function renderEconomicsChart(results) {
     const width = clamp((Math.abs(value) / maxAbs) * 48, 1, 48);
     const negative = value < 0;
     const classes = ["bridge-fill", negative ? "negative" : "", kind === "cost" ? "cost" : "", kind === "margin" ? "margin" : ""].filter(Boolean).join(" ");
+    const hint = rows.find(([rowLabel]) => rowLabel === label)?.[3] || "";
     return `
-      <div class="bridge-row">
-        <span class="bridge-label">${label}</span>
-        <div class="bridge-track"><span class="${classes}" style="width:${width}%"></span></div>
-        <span class="bridge-value">${formatMoney(value)}</span>
+      <div class="bridge-row" title="${escapeHtml(`${label}: ${formatMoney(value)}`)}">
+        <span class="bridge-label with-info">${label} ${infoTip(hint)}</span>
+        <div class="bridge-track" aria-label="${escapeHtml(`${label}, ${formatMoney(value)}`)}"><span class="${classes}" style="width:${width}%"></span></div>
+        <span class="bridge-value" title="${escapeHtml(formatMoney(value))}">${formatMoneyCompact(value)}</span>
       </div>
     `;
   }).join("");
 
-  $("#breakeven-caption").textContent = `${formatMoney(results.breakevenMonthly)} monthly breakeven per 10 units`;
+  $("#economics-scale").innerHTML = [
+    `<span>${formatMoneyCompact(-maxAbs)}</span>`,
+    "<span>$0</span>",
+    `<span>${formatMoneyCompact(maxAbs)}</span>`
+  ].join("");
+
+  $("#breakeven-caption").textContent = `${formatMoneyCompact(results.breakevenMonthly)} monthly breakeven per 10 units`;
+  $("#breakeven-caption").title = `${formatMoney(results.breakevenMonthly)} monthly breakeven per 10 units`;
 }
 
 function renderScenarioOutputs(results) {
